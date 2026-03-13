@@ -17,13 +17,13 @@ export const runtime = 'nodejs';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } },
+  { params }: { params: Promise<{ token: string }> },
 ) {
   try {
+    const { token: requestToken } = await params;
     const { searchParams } = new URL(request.url);
 
     // 双重验证：TVBox Token（全局或用户） 或 用户登录
-    const requestToken = params.token;
     const globalToken = process.env.TVBOX_SUBSCRIBE_TOKEN;
     const authInfo = getAuthInfoFromCookie(request);
 

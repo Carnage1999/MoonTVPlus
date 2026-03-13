@@ -13,8 +13,9 @@ export const runtime = 'nodejs';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } },
+  { params }: { params: Promise<{ token: string }> },
 ) {
+  const { token: requestToken } = await params;
   const { searchParams } = new URL(request.url);
   const ac = searchParams.get('ac');
   const wd = searchParams.get('wd'); // 搜索关键词
@@ -29,7 +30,6 @@ export async function GET(
   }
 
   // 验证 TVBox Token（从路径中获取）
-  const requestToken = params.token;
   const globalToken = process.env.TVBOX_SUBSCRIBE_TOKEN;
 
   // 检查是否是全局token或用户token

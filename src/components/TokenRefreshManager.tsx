@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import { clearAuthCookie, getAuthInfoFromBrowserCookie } from '@/lib/auth';
-import { TOKEN_CONFIG } from '@/lib/refresh-token';
+import { TOKEN_CONFIG } from '@/lib/token-config';
 
 /**
  * Token 自动刷新管理器

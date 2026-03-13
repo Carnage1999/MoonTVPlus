@@ -30,13 +30,13 @@ async function getEmbyClient(embyKey?: string) {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string; filename: string } },
+  { params }: { params: Promise<{ token: string; filename: string }> },
 ) {
   try {
+    const { token: requestToken, filename } = await params;
     const { searchParams } = new URL(request.url);
 
     // 双重验证：TVBox Token（全局或用户） 或 用户登录
-    const requestToken = params.token;
     const globalToken = process.env.TVBOX_SUBSCRIBE_TOKEN;
     const authInfo = getAuthInfoFromCookie(request);
 
@@ -143,7 +143,7 @@ export async function GET(
     }
 
     // 使用 URL 中的文件名
-    headers.set('Content-Disposition', `inline; filename="${params.filename}"`);
+    headers.set('Content-Disposition', `inline; filename="${filename}"`);
 
     // 流式返回视频内容，不等待下载完成
     return new NextResponse(videoResponse.body, {

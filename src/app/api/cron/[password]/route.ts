@@ -23,12 +23,14 @@ const COOLDOWN_MS = 10 * 60 * 1000; // 10分钟冷却时间
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { password: string } },
+  { params }: { params: Promise<{ password: string }> },
 ) {
+  const { password } = await params;
+
   console.log(request.url);
 
   const cronPassword = process.env.CRON_PASSWORD || 'mtvpls';
-  if (params.password !== cronPassword) {
+  if (password !== cronPassword) {
     return NextResponse.json(
       { success: false, message: 'Unauthorized' },
       { status: 401 },

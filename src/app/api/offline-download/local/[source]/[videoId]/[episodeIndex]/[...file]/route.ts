@@ -39,12 +39,12 @@ export async function GET(
   {
     params,
   }: {
-    params: {
+    params: Promise<{
       source: string;
       videoId: string;
       episodeIndex: string;
       file: string[];
-    };
+    }>;
   },
 ) {
   if (!checkPermission(request)) {
@@ -52,7 +52,7 @@ export async function GET(
   }
 
   try {
-    const { source, videoId, episodeIndex, file } = params;
+    const { source, videoId, episodeIndex, file } = await params;
     const fileName = file.join('/'); // 支持嵌套路径
 
     if (!source || !videoId || !episodeIndex || !fileName) {

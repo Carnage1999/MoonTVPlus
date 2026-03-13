@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
-import { TOKEN_CONFIG, verifyRefreshToken } from './refresh-token';
+import { TOKEN_CONFIG } from './token-config';
+import { verifyRefreshToken } from './refresh-token';
 
 // 生成签名
 export async function generateSignatureForMiddleware(

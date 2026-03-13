@@ -14,9 +14,11 @@ export const runtime = 'nodejs';
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     // 权限检查
     const authInfo = getAuthInfoFromCookie(req);
     if (!authInfo || (authInfo.role !== 'admin' && authInfo.role !== 'owner')) {
@@ -26,7 +28,7 @@ export async function POST(
     const config = await getConfig();
     const subscriptions = config.AnimeSubscriptionConfig?.Subscriptions || [];
 
-    const subscription = subscriptions.find((sub) => sub.id === params.id);
+    const subscription = subscriptions.find((sub) => sub.id === id);
     if (!subscription) {
       return NextResponse.json({ error: '订阅不存在' }, { status: 404 });
     }

@@ -77,9 +77,9 @@ function SearchPageClient() {
   const flushTimerRef = useRef<number | null>(null);
   const [useFluidSearch, setUseFluidSearch] = useState(true);
   // 聚合卡片 refs 与聚合统计缓存
-  const groupRefs = useRef<Map<string, React.RefObject<VideoCardHandle>>>(
-    new Map(),
-  );
+  const groupRefs = useRef<
+    Map<string, React.RefObject<VideoCardHandle | null>>
+  >(new Map());
   const groupStatsRef = useRef<
     Map<
       string,
@@ -138,7 +138,7 @@ function SearchPageClient() {
   const getGroupRef = (key: string) => {
     let ref = groupRefs.current.get(key);
     if (!ref) {
-      ref = React.createRef<VideoCardHandle>();
+      ref = React.createRef<VideoCardHandle | null>();
       groupRefs.current.set(key, ref);
     }
     return ref;

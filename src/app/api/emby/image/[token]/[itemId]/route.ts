@@ -29,13 +29,13 @@ async function getEmbyClient(embyKey?: string) {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string; itemId: string } },
+  { params }: { params: Promise<{ token: string; itemId: string }> },
 ) {
   try {
+    const { token: requestToken, itemId } = await params;
     const { searchParams } = new URL(request.url);
 
     // 双重验证：TVBox Token（全局或用户） 或 用户登录
-    const requestToken = params.token;
     const globalToken = process.env.TVBOX_SUBSCRIBE_TOKEN;
     const authInfo = getAuthInfoFromCookie(request);
 
@@ -68,7 +68,6 @@ export async function GET(
       return NextResponse.json({ error: '未授权' }, { status: 401 });
     }
 
-    const itemId = params.itemId;
     const imageType = (searchParams.get('imageType') || 'Primary') as
       | 'Primary'
       | 'Backdrop'

@@ -13,9 +13,11 @@ export const runtime = 'nodejs';
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     // 权限检查
     const authInfo = getAuthInfoFromCookie(req);
     if (!authInfo || (authInfo.role !== 'admin' && authInfo.role !== 'owner')) {
@@ -25,7 +27,7 @@ export async function PUT(
     const config = await getConfig();
     const subscriptions = config.AnimeSubscriptionConfig?.Subscriptions || [];
 
-    const index = subscriptions.findIndex((sub) => sub.id === params.id);
+    const index = subscriptions.findIndex((sub) => sub.id === id);
     if (index === -1) {
       return NextResponse.json({ error: '订阅不存在' }, { status: 404 });
     }
@@ -81,9 +83,11 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     // 权限检查
     const authInfo = getAuthInfoFromCookie(req);
     if (!authInfo || (authInfo.role !== 'admin' && authInfo.role !== 'owner')) {
@@ -93,7 +97,7 @@ export async function DELETE(
     const config = await getConfig();
     const subscriptions = config.AnimeSubscriptionConfig?.Subscriptions || [];
 
-    const index = subscriptions.findIndex((sub) => sub.id === params.id);
+    const index = subscriptions.findIndex((sub) => sub.id === id);
     if (index === -1) {
       return NextResponse.json({ error: '订阅不存在' }, { status: 404 });
     }

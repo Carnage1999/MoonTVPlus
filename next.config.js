@@ -3,8 +3,7 @@
 
 const isCloudflare =
   process.env.CF_PAGES === '1' || process.env.BUILD_TARGET === 'cloudflare';
-const isLintRun =
-  process.argv.includes('lint') || process.env.NEXT_DISABLE_PWA === '1';
+const isPwaEnabled = process.env.ENABLE_PWA === '1';
 
 const nextConfig = {
   output: isCloudflare ? undefined : 'standalone',
@@ -14,11 +13,6 @@ const nextConfig = {
   },
 
   reactStrictMode: false,
-  swcMinify: true,
-
-  experimental: {
-    instrumentationHook: process.env.NODE_ENV === 'production' && !isCloudflare,
-  },
 
   images: {
     unoptimized: true,
@@ -88,7 +82,7 @@ const nextConfig = {
   },
 };
 
-if (isLintRun) {
+if (!isPwaEnabled) {
   module.exports = nextConfig;
 } else {
   const withPWA = require('next-pwa')({
