@@ -31,7 +31,7 @@ declare global {
 // 动态导入浏览器专用库
 let Artplayer: any = null;
 let Hls: any = null;
-let flvjs: any = null;
+let mpegts: any = null;
 
 // 直播频道接口
 interface LiveChannel {
@@ -65,8 +65,8 @@ function LivePageClient() {
       import('hls.js').then((mod) => {
         Hls = mod.default;
       });
-      import('flv.js').then((mod) => {
-        flvjs = mod.default;
+      import('mpegts.js').then((mod) => {
+        mpegts = mod.default;
       });
     }
   }, []);
@@ -1555,8 +1555,8 @@ function LivePageClient() {
   }
 
   function flvLoader(video: HTMLVideoElement, url: string) {
-    if (!flvjs) {
-      console.error('FLV.js 未加载');
+    if (!mpegts) {
+      console.error('mpegts.js 未加载');
       return;
     }
 
@@ -1573,16 +1573,16 @@ function LivePageClient() {
       }
     }
 
-    const flvPlayer = flvjs.createPlayer({
+    const flvPlayer = mpegts.createPlayer({
       type: 'flv',
       url,
       isLive: true,
     });
     flvPlayer.attachMediaElement(video);
     flvPlayer.on(
-      flvjs.Events.ERROR,
+      mpegts.Events.ERROR,
       (errorType: string, errorDetail: string) => {
-        console.error('FLV.js error:', errorType, errorDetail);
+        console.error('mpegts.js error:', errorType, errorDetail);
       },
     );
     flvPlayer.load();
@@ -1595,7 +1595,7 @@ function LivePageClient() {
       if (
         !Artplayer ||
         !Hls ||
-        !flvjs ||
+        !mpegts ||
         !videoUrl ||
         !artRef.current ||
         !currentChannel

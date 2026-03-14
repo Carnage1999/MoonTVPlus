@@ -10,7 +10,7 @@ import PageLayout from '@/components/PageLayout';
 
 let Artplayer: any = null;
 let Hls: any = null;
-let flvjs: any = null;
+let mpegts: any = null;
 
 function WebLivePageClient() {
   const searchParams = useSearchParams();
@@ -72,8 +72,8 @@ function WebLivePageClient() {
         import('hls.js').then((mod) => {
           Hls = mod.default;
         }),
-        import('flv.js').then((mod) => {
-          flvjs = mod.default;
+        import('mpegts.js').then((mod) => {
+          mpegts = mod.default;
         }),
       ]).then(() => {
         setLibrariesLoaded(true);
@@ -169,13 +169,13 @@ function WebLivePageClient() {
   }
 
   function flvLoader(video: HTMLVideoElement, url: string) {
-    if (!flvjs) return;
-    const flvPlayer = flvjs.createPlayer({ type: 'flv', url, isLive: true });
+    if (!mpegts) return;
+    const flvPlayer = mpegts.createPlayer({ type: 'flv', url, isLive: true });
     flvPlayer.attachMediaElement(video);
     flvPlayer.on(
-      flvjs.Events.ERROR,
+      mpegts.Events.ERROR,
       (errorType: string, errorDetail: string) => {
-        console.error('FLV.js error:', errorType, errorDetail);
+        console.error('mpegts.js error:', errorType, errorDetail);
         setErrorMessage(`播放失败: ${errorType} - ${errorDetail}`);
         setVideoUrl('');
       },
@@ -233,7 +233,7 @@ function WebLivePageClient() {
   };
 
   useEffect(() => {
-    if (!Artplayer || !Hls || !flvjs || !videoUrl || !artRef.current) return;
+    if (!Artplayer || !Hls || !mpegts || !videoUrl || !artRef.current) return;
 
     // 销毁旧的播放器实例
     cleanupPlayer();

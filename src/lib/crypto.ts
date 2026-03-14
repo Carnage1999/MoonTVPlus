@@ -1,4 +1,9 @@
-import CryptoJS from 'crypto-js';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from 'crypto';
 
 /**
  * 生成 SHA256 哈希值
@@ -6,7 +11,7 @@ import CryptoJS from 'crypto-js';
  * @returns SHA256 哈希值（十六进制字符串）
  */
 export function sha256(data: string): string {
-  return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
+  return createHash('sha256').update(data).digest('hex');
 }
 
 /**
@@ -32,6 +37,34 @@ export function generateFolderKey(
 }
 
 /**
+ * Derive key and IV from password + salt using OpenSSL's EVP_BytesToKey (MD5).
+ * Compatible with CryptoJS.AES passphrase-based encryption format.
+ */
+function evpBytesToKey(
+  password: string,
+  salt: Buffer,
+): { key: Buffer; iv: Buffer } {
+  const keyLen = 32;
+  const ivLen = 16;
+  const data = Buffer.concat([Buffer.from(password), salt]);
+  const parts: Buffer[] = [];
+  let last: Buffer = Buffer.alloc(0);
+  while (Buffer.concat(parts).length < keyLen + ivLen) {
+    last = Buffer.from(
+      createHash('md5')
+        .update(Buffer.concat([last, data]))
+        .digest(),
+    );
+    parts.push(last);
+  }
+  const buf = Buffer.concat(parts);
+  return {
+    key: buf.subarray(0, keyLen),
+    iv: buf.subarray(keyLen, keyLen + ivLen),
+  };
+}
+
+/**
  * 简单的对称加密工具
  * 使用 AES 加密算法
  */
@@ -44,8 +77,16 @@ export class SimpleCrypto {
    */
   static encrypt(data: string, password: string): string {
     try {
-      const encrypted = CryptoJS.AES.encrypt(data, password).toString();
-      return encrypted;
+      const salt = randomBytes(8);
+      const { key, iv } = evpBytesToKey(password, salt);
+      const cipher = createCipheriv('aes-256-cbc', key, iv);
+      const encrypted = Buffer.concat([
+        cipher.update(data, 'utf8'),
+        cipher.final(),
+      ]);
+      return Buffer.concat([Buffer.from('Salted__'), salt, encrypted]).toString(
+        'base64',
+      );
     } catch (error) {
       throw new Error('加密失败');
     }
@@ -59,8 +100,15 @@ export class SimpleCrypto {
    */
   static decrypt(encryptedData: string, password: string): string {
     try {
-      const bytes = CryptoJS.AES.decrypt(encryptedData, password);
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      const input = Buffer.from(encryptedData, 'base64');
+      const salt = input.subarray(8, 16);
+      const ciphertext = input.subarray(16);
+      const { key, iv } = evpBytesToKey(password, salt);
+      const decipher = createDecipheriv('aes-256-cbc', key, iv);
+      const decrypted = Buffer.concat([
+        decipher.update(ciphertext),
+        decipher.final(),
+      ]).toString('utf8');
 
       if (!decrypted) {
         throw new Error('解密失败，请检查密码是否正确');
