@@ -4,7 +4,7 @@
 
 import { ArrowDownWideNarrow, ArrowUpNarrowWide, Film } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { base58Encode } from '@/lib/utils';
@@ -45,7 +45,7 @@ interface EmbyView {
   type: string;
 }
 
-export default function PrivateLibraryPage() {
+function PrivateLibraryPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -1251,5 +1251,13 @@ export default function PrivateLibraryPage() {
         )}
       </div>
     </PageLayout>
+  );
+}
+
+export default function PrivateLibraryPage() {
+  return (
+    <Suspense>
+      <PrivateLibraryPageClient />
+    </Suspense>
   );
 }

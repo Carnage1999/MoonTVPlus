@@ -4,7 +4,7 @@
 
 import { Heart, Radio, Tv } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 import {
   deleteFavorite,
@@ -2742,5 +2742,9 @@ const FavoriteIcon = ({ filled }: { filled: boolean }) => {
 };
 
 export default function LivePage() {
-  return <LivePageClient />;
+  return (
+    <Suspense>
+      <LivePageClient />
+    </Suspense>
+  );
 }

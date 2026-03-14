@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { BackButton } from './BackButton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileHeader from './MobileHeader';
@@ -33,7 +35,9 @@ const PageLayout = ({
           {/* 侧边栏 - 桌面端显示，移动端隐藏 */}
           {!hideNavigation && (
             <div className='hidden md:block'>
-              <Sidebar activePath={activePath} />
+              <Suspense>
+                <Sidebar activePath={activePath} />
+              </Suspense>
             </div>
           )}
 
@@ -70,7 +74,9 @@ const PageLayout = ({
         {/* 移动端底部导航 */}
         {!hideNavigation && (
           <div className='md:hidden'>
-            <MobileBottomNav activePath={activePath} />
+            <Suspense>
+              <MobileBottomNav activePath={activePath} />
+            </Suspense>
           </div>
         )}
       </div>

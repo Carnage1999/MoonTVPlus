@@ -5,6 +5,8 @@ import { Inter } from 'next/font/google';
 
 import './globals.css';
 
+import { Suspense } from 'react';
+
 import { getConfig } from '@/lib/config';
 
 import { DanmakuCacheCleanup } from '../components/DanmakuCacheCleanup';
@@ -238,7 +240,9 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TopProgressBar />
+          <Suspense>
+            <TopProgressBar />
+          </Suspense>
           <TokenRefreshManager />
           <SiteProvider
             siteName={siteName}

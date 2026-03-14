@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Radio } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 import { useWebLiveSync } from '@/hooks/useWebLiveSync';
 
@@ -12,7 +12,7 @@ let Artplayer: any = null;
 let Hls: any = null;
 let flvjs: any = null;
 
-export default function WebLivePage() {
+function WebLivePageClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const artRef = useRef<HTMLDivElement | null>(null);
@@ -918,5 +918,13 @@ export default function WebLivePage() {
         </div>
       </div>
     </PageLayout>
+  );
+}
+
+export default function WebLivePage() {
+  return (
+    <Suspense>
+      <WebLivePageClient />
+    </Suspense>
   );
 }
